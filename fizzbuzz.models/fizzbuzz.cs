@@ -1,6 +1,4 @@
-using Microsoft.VisualBasic;
-
-namespace fizzbuzz;
+﻿namespace fizzbuzz.models;
 
 public record FizzBuzzInput(
     int Int1,
