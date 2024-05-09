@@ -3,6 +3,10 @@ using fizzbuzz;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IFizzbuzz, BasicFizzbuzz>();
+builder.Services.AddScoped<IFizzbuzz, BasicFizzbuzz>();
+builder.Services.AddTransient<IFizzbuzz, BasicFizzbuzz>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -15,9 +19,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
-
 
 app.MapPost("/fizzbuzz", (IFizzbuzz fizz, FizzBuzzInput input) =>
 {

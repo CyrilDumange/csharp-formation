@@ -8,7 +8,8 @@ public record FizzBuzzInput(
     string Str1,
     string Str2,
     int Limit
-){}
+)
+{ }
 
 
-public record FizzbuzzOutput(string[] Values) {}
+public record FizzbuzzOutput(string[] Values) { }
