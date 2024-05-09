@@ -12,7 +12,7 @@ namespace Common.AuthMiddleware
             var endpoint = httpContext.GetEndpoint();
             var attributes = endpoint?.Metadata.GetOrderedMetadata<AuthorizeClaimAttribute>();
 
-            if (attributes == null || attributes.Count == 0)
+            if (attributes == null || attributes.Count == 0 || endpoint is null)
             {
                 await _next(httpContext);
                 return;
