@@ -11,6 +11,11 @@ namespace webapi.Handlers
             {
                 return fizz.Compute(input);
             });
+
+            app.MapPost("/fizzbuzz/historized", (IHistorizedFizzbuzz fizz, FizzBuzzInput input) =>
+            {
+                return fizz.Compute(input);
+            });
             return app;
         }
     }
