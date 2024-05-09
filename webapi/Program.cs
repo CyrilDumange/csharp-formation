@@ -1,4 +1,5 @@
 using fizzbuzz;
+using fizzbuzz.models;
 
 var builder = WebApplication.CreateBuilder(args);
 

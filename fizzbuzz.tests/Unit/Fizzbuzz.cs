@@ -1,10 +1,11 @@
 namespace fizzbuzz.tests;
 using fizzbuzz;
+using fizzbuzz.models;
 
 public class UnitTest1
 {
     [Theory]
-    [InlineData(2, 3, "fizz", "buzz", 6, new string[]{"1","fizz", "buzz", "fizz", "5", "fizzbuzz"})]
+    [InlineData(2, 3, "fizz", "buzz", 6, new string[] { "1", "fizz", "buzz", "fizz", "5", "fizzbuzz" })]
     public void Test_Ok(int Int1, int Int2, string String1, string String2, int limit, string[] expected)
     {
         var fizz = new BasicFizzbuzz();
