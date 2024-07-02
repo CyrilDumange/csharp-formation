@@ -11,7 +11,7 @@ namespace fizzbuzz.dal.Migrations
     {
         public static Task Apply(IDbConnection conn)
         {
-            return conn.ExecuteAsync("CREATE TABLE fizz_history(input TEXT PRIMARY KEY, count int);");
+            return conn.ExecuteAsync("CREATE TABLE IF NOT EXISTS fizz_history(input TEXT PRIMARY KEY, count int);");
         }
     }
 }
