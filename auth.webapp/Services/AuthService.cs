@@ -7,6 +7,7 @@ using Common.Results;
 using JOS.Result;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
+using OpenIddict.EntityFrameworkCore.Models;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace auth.webapp.Services
@@ -17,7 +18,10 @@ namespace auth.webapp.Services
         Task<Result<ClaimsPrincipal>> GetToken(OpenIddictRequest req);
     }
 
-    public class AuthService(IOpenIddictApplicationManager appManager) : IAuthService
+    public class AuthService(
+        IOpenIddictApplicationManager appManager,
+        IOpenIddictAuthorizationManager authManager
+        ) : IAuthService
     {
         public async Task<Result<ClaimsPrincipal>> GetToken(OpenIddictRequest req)
         {
@@ -31,10 +35,28 @@ namespace auth.webapp.Services
             {
                 return Result.Failure<ClaimsPrincipal>(new Error(ErrorTypes.NoData, "could not find client"));
             }
+
+
+            var appID = await appManager.GetIdAsync(client);
+            if (appID is null)
+            {
+                return Result.Failure<ClaimsPrincipal>(new Error(ErrorTypes.Internal, "client has no ID ?"));
+            }
+
             var identity = new ClaimsIdentity(TokenValidationParameters.DefaultAuthenticationType, Claims.Name, Claims.Role);
 
             identity.SetClaim(Claims.Subject, req.ClientId);
             identity.SetClaim(Claims.Name, "test");
+
+            await foreach (var c in authManager.FindByApplicationIdAsync(appID))
+            {
+                identity.SetClaim("test", ((OpenIddictEntityFrameworkCoreAuthorization)c).Subject);
+            }
+
+            foreach (Claim claim in identity.Claims)
+            {
+                claim.SetDestinations(OpenIddictConstants.Destinations.AccessToken, OpenIddictConstants.Destinations.IdentityToken);
+            }
 
             return Result.Success(new ClaimsPrincipal(identity));
         }

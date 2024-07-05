@@ -9,5 +9,6 @@ namespace Common.Results
     {
         public const string BadRequest = "400";
         public const string NoData = "404";
+        public const string Internal = "500";
     }
 }
