@@ -1,12 +1,10 @@
 using auth.models;
 using auth.webapp.Auth;
+using auth.webapp.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<AuthContext>(
     options =>
@@ -15,18 +13,14 @@ builder.Services.AddDbContext<AuthContext>(
         options.UseOpenIddict();
     });
 
-
-builder.Services.AddOpenIddict().AddCore(options =>
-{
-    // Configure OpenIddict to use the Entity Framework Core stores and models.
-    // Note: call ReplaceDefaultEntities() to replace the default entities.
-    options.UseEntityFrameworkCore()
-            .UseDbContext<DbContext>();
-});
+builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.Services.AddOpenIddict()
-
-    // Register the OpenIddict server components.
+    .AddCore(options =>
+    {
+        options.UseEntityFrameworkCore()
+                .UseDbContext<AuthContext>();
+    })
     .AddServer(options =>
     {
         // Enable the token endpoint.
@@ -38,6 +32,8 @@ builder.Services.AddOpenIddict()
         options.AllowRefreshTokenFlow();
         options.AllowAuthorizationCodeFlow();
 
+        options.DisableAccessTokenEncryption();
+
         // Register the signing and encryption credentials.
         options.AddDevelopmentEncryptionCertificate()
                .AddDevelopmentSigningCertificate();
@@ -45,27 +41,25 @@ builder.Services.AddOpenIddict()
         // Register the ASP.NET Core host and configure the ASP.NET Core options.
         options.UseAspNetCore()
                .EnableTokenEndpointPassthrough();
+    }).AddValidation(options =>
+    {
+        // Import the configuration from the local OpenIddict server instance.
+        options.UseLocalServer();
+
+        // Register the ASP.NET Core host.
+        options.UseAspNetCore();
     });
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = IdentityConstants.BearerScheme;
-    options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
-    options.DefaultScheme = IdentityConstants.BearerScheme;
-}).AddCookie(IdentityConstants.BearerScheme);
-
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityCore<AuthUser>()
-    .AddEntityFrameworkStores<AuthContext>()
-    .AddDefaultTokenProviders()
-    .AddApiEndpoints();
-
+builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-app.MapIdentityApi<AuthUser>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -84,6 +78,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+
+app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -2,9 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\auth.models\auth.models.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="JOS.Result" Version="1.2.4-beta-gf6eedfd14c" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -19,7 +21,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+      <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 </Project>
