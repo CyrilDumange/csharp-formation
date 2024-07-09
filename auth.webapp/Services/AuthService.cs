@@ -47,6 +47,7 @@ namespace auth.webapp.Services
 
             identity.SetClaim(Claims.Subject, req.ClientId);
             identity.SetClaim(Claims.Name, "test");
+            identity.SetClaim(Claims.Audience, "test");
 
             string claimValue = string.Empty;
 
