@@ -25,7 +25,7 @@ builder.Services.AddTransient<IDbConnection>((sp) =>
 );
 
 
-/*builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = OpenIddictConstants.Schemes.Bearer;
             options.DefaultChallengeScheme = OpenIddictConstants.Schemes.Bearer;
@@ -39,26 +39,23 @@ builder.Services.AddTransient<IDbConnection>((sp) =>
 
             options.Authority = "https://localhost:7256/";
             options.Audience = "test";
+            var t = options.TokenHandlers;
 
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidateIssuer = false,
+                ValidateIssuer = true,
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = "https://localhost:7256/",
-                ValidAudience = "test"
+                ValidAudience = "test",
+                TryAllIssuerSigningKeys = true,
+
             };
 
-        });*/
-builder.Services.AddHttpClient("CustomHttpClient")
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-            });
+        });
 
-
-builder.Services.AddOpenIddict()
+/*builder.Services.AddOpenIddict()
     .AddValidation(options =>
     {
 
@@ -77,14 +74,14 @@ builder.Services.AddOpenIddict()
         }));
         options.UseAspNetCore();
     });
-
-builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+*/
+builder.Services.AddAuthentication(OpenIddictConstants.Schemes.Bearer);
 
 builder.Services.AddAuthorization(options =>
 {
-    options.DefaultPolicy = new AuthorizationPolicyBuilder(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme)
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(OpenIddictConstants.Schemes.Bearer)
                 .RequireAuthenticatedUser()
-                .RequireClaim("test", "claim.me.write")
+                .RequireClaim("scope", "user.write")
                 .Build();
 });
 
@@ -96,6 +93,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 FizzHistoryMigration.Apply(app.Services.GetRequiredService<IDbConnection>()).Wait();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
