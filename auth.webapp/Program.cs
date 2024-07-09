@@ -32,6 +32,7 @@ builder.Services.AddOpenIddict()
         // Enable the token endpoint.
         options.SetTokenEndpointUris("connect/token");
         options.SetAuthorizationEndpointUris("connect/authorization");
+        options.SetIssuer("https://localhost:7256/");
 
         // Enable the client credentials flow.
         options.AllowClientCredentialsFlow();
@@ -39,6 +40,7 @@ builder.Services.AddOpenIddict()
         options.AllowAuthorizationCodeFlow();
 
         options.DisableAccessTokenEncryption();
+
 
         // Register the signing and encryption credentials.
         options.AddDevelopmentEncryptionCertificate()
@@ -50,6 +52,7 @@ builder.Services.AddOpenIddict()
     }).AddValidation(options =>
     {
         options.UseLocalServer();
+        options.AddAudiences("test");
 
         // Register the ASP.NET Core host.
         options.UseAspNetCore();
@@ -61,7 +64,6 @@ builder.Services.AddAuthorization();
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 
 builder.Services.AddSwaggerGen();
 
