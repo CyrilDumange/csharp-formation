@@ -110,9 +110,39 @@ namespace Common.Tests.AuthMiddleware
             Assert.Equal(System.Net.HttpStatusCode.OK, res.StatusCode);
             Assert.True(called);
         }
+
+        [Fact]
+        public async Task TestContains()
+        {
+            bool called = false;
+            var builder = new WebHostBuilder()
+                .UseEnvironment("Development")
+                .ConfigureServices(services =>
+                {
+                    services.AddRouting();
+                }).Configure(app =>
+                {
+                    app.UseRouting();
+                    app.UseMiddleware<ClaimInjector>("test", "test retest");
+                    app.UseMiddleware<AuthorizeClaimMiddleware>();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapGet("/test",
+                        [Claim(Key = "test", Value = "test")]
+                        () =>
+                        {
+                            called = true;
+                        });
+                    });
+                });
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+
+            var res = await client.GetAsync("/test");
+            Assert.Equal(System.Net.HttpStatusCode.OK, res.StatusCode);
+            Assert.True(called);
+        }
     }
-
-
 
     public class ClaimInjector(RequestDelegate _next, string key, string value)
     {

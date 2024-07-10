@@ -19,7 +19,8 @@ namespace Common.AuthMiddleware
 
             foreach (var att in attributes)
             {
-                if (httpContext.User.HasClaim(att.Key, att.Value))
+                var c = httpContext.User.Claims.FirstOrDefault(x => x.Type == att.Key);
+                if (c is not null && c.Value.Contains(att.Value))
                 {
                     await _next(httpContext);
                     return;
