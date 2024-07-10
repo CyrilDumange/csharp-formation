@@ -3,7 +3,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using auth.models;
 using auth.webapp.Services;
+using Common.AuthMiddleware;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
@@ -42,6 +44,7 @@ namespace auth.webapp.Controllers
         }
 
         [HttpPost("/create"), IgnoreAntiforgeryToken]
+        [AuthorizeClaim(Key = "scope", Value = "user.write")]
         public async Task<ActionResult> CreateClient([FromBody] User user)
         {
             var existing = await appManager.FindByClientIdAsync(user.ClientID);
@@ -65,22 +68,72 @@ namespace auth.webapp.Controllers
                     },
             });
 
-            var token = await auth.GetToken(new OpenIddictRequest
-            {
-                ClientId = client.ClientId,
-                ClientSecret = client.ClientSecret
-            });
-
-            var a = (OpenIddictEntityFrameworkCoreAuthorization)await authManager.CreateAsync(new OpenIddictAuthorizationDescriptor
-            {
-                ApplicationId = client.Id,
-                CreationDate = DateTime.Now,
-                Status = OpenIddictConstants.Statuses.Valid,
-                Subject = "claim.me.read",
-                Type = OpenIddictConstants.AuthorizationTypes.Permanent,
-            });
-
             return Ok(client);
         }
+
+        [HttpPost("/add-scope")]
+        [AuthorizeClaim(Key = "scope", Value = "user.write")]
+        public async Task<ActionResult> AddAuthToClient([FromBody] ClientAuth auth)
+        {
+            var app = (OpenIddictEntityFrameworkCoreApplication)await appManager.FindByClientIdAsync(User.Identity.Name);
+            if (app is null)
+            {
+                return NotFound();
+            }
+
+            var ret = await authManager.CreateAsync(new OpenIddictAuthorizationDescriptor
+            {
+                ApplicationId = app.Id,
+                Status = OpenIddictConstants.Statuses.Valid,
+                Subject = auth.Scope,
+                Type = OpenIddictConstants.AuthorizationTypes.Permanent
+            });
+            return Ok(ret);
+        }
+
+        [HttpPost("/init")]
+        public async Task<ActionResult> InitUser()
+        {
+
+            var client = (OpenIddictEntityFrameworkCoreApplication?)appManager.FindByClientIdAsync("test").Result;
+            if (client is null)
+            {
+                client = (OpenIddictEntityFrameworkCoreApplication)await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+                {
+                    ClientId = "test",
+                    ClientSecret = "test",
+                    DisplayName = "admin test",
+                    Permissions = {
+                        OpenIddictConstants.Permissions.Endpoints.Token,
+                    OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
+                    OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+
+                    OpenIddictConstants.Permissions.Prefixes.Scope + "api"}
+                });
+
+                var res = await authManager.CreateAsync(new OpenIddictAuthorizationDescriptor
+                {
+                    ApplicationId = client.Id,
+                    CreationDate = DateTime.Now,
+                    Status = OpenIddictConstants.Statuses.Valid,
+                    Subject = "user.write",
+                    Type = OpenIddictConstants.AuthorizationTypes.Permanent,
+                });
+                return Ok();
+            }
+            return NoContent();
+        }
+
+
+        public record ClientAuth
+        {
+            [JsonPropertyName("client_id")]
+            public required string ClientID;
+
+            [JsonPropertyName("scope")]
+            public required string Scope;
+        }
+
     }
 }

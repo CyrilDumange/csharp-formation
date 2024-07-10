@@ -1,8 +1,14 @@
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using auth.models;
 using auth.webapp.Auth;
 using auth.webapp.Services;
+using Common.AuthMiddleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using OpenIddict.Abstractions;
+using OpenIddict.EntityFrameworkCore.Models;
+using OpenIddict.Validation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,15 +49,15 @@ builder.Services.AddOpenIddict()
                .EnableTokenEndpointPassthrough();
     }).AddValidation(options =>
     {
-        // Import the configuration from the local OpenIddict server instance.
         options.UseLocalServer();
 
         // Register the ASP.NET Core host.
         options.UseAspNetCore();
     });
 
-builder.Services.AddAuthentication();
+builder.Services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization();
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -73,9 +79,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<AuthorizeClaimMiddleware>();
+
 
 app.MapRazorPages();
 
