@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using auth.models;
 using auth.webapp.Services;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Abstractions;
@@ -41,7 +42,8 @@ namespace auth.webapp.Controllers
             return BadRequest();
         }
 
-        [HttpPost("/create"), IgnoreAntiforgeryToken]
+        [HttpPost("user/create"), IgnoreAntiforgeryToken]
+        [Authorize]
         public async Task<ActionResult> CreateClient([FromBody] User user)
         {
             var existing = await appManager.FindByClientIdAsync(user.ClientID);
@@ -65,22 +67,9 @@ namespace auth.webapp.Controllers
                     },
             });
 
-            var token = await auth.GetToken(new OpenIddictRequest
-            {
-                ClientId = client.ClientId,
-                ClientSecret = client.ClientSecret
-            });
-
-            var a = (OpenIddictEntityFrameworkCoreAuthorization)await authManager.CreateAsync(new OpenIddictAuthorizationDescriptor
-            {
-                ApplicationId = client.Id,
-                CreationDate = DateTime.Now,
-                Status = OpenIddictConstants.Statuses.Valid,
-                Subject = "claim.me.read",
-                Type = OpenIddictConstants.AuthorizationTypes.Permanent,
-            });
-
             return Ok(client);
         }
+
+
     }
 }

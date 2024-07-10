@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "auth.webapp", "auth.webapp\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{4216C85E-0498-4BA6-91FD-1EDBFDAD2231}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "Common.Tests\Common.Tests.csproj", "{7DF712F9-0BA7-426D-949B-8B08AA6B83E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{4216C85E-0498-4BA6-91FD-1EDBFDAD2231}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4216C85E-0498-4BA6-91FD-1EDBFDAD2231}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4216C85E-0498-4BA6-91FD-1EDBFDAD2231}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DF712F9-0BA7-426D-949B-8B08AA6B83E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DF712F9-0BA7-426D-949B-8B08AA6B83E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DF712F9-0BA7-426D-949B-8B08AA6B83E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DF712F9-0BA7-426D-949B-8B08AA6B83E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

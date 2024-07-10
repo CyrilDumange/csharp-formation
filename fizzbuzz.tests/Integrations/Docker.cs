@@ -43,7 +43,7 @@ namespace fizzbuzz.tests.Integrations
 
             var container = await client.Containers.CreateContainerAsync(new CreateContainerParameters
             {
-                Image = "postgres:16-alpine",
+                Image = "postgres:alpine",
                 Name = containerName,
                 HostConfig = new HostConfig
                 {
