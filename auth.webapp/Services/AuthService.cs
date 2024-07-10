@@ -48,10 +48,13 @@ namespace auth.webapp.Services
             identity.SetClaim(Claims.Subject, req.ClientId);
             identity.SetClaim(Claims.Name, "test");
 
+            string claimValue = string.Empty;
+
             await foreach (var c in authManager.FindByApplicationIdAsync(appID))
             {
-                identity.SetClaim("test", ((OpenIddictEntityFrameworkCoreAuthorization)c).Subject);
+                claimValue += ((OpenIddictEntityFrameworkCoreAuthorization)c).Subject;
             }
+            identity.SetClaim(Claims.Scope, claimValue);
 
             foreach (Claim claim in identity.Claims)
             {
