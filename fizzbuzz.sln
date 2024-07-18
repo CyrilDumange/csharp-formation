@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fizzbuzz.tests", "fizzbuzz.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "webapi", "webapi\webapi.csproj", "{F95AA6AF-77EE-497C-A55F-542D7C082AE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "Common.Tests\Common.Tests.csproj", "{4067EFD6-F901-4D26-B740-7597492FBB07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{D5372441-D38A-4E39-8622-F3BAFBB098EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{F95AA6AF-77EE-497C-A55F-542D7C082AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F95AA6AF-77EE-497C-A55F-542D7C082AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F95AA6AF-77EE-497C-A55F-542D7C082AE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4067EFD6-F901-4D26-B740-7597492FBB07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4067EFD6-F901-4D26-B740-7597492FBB07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4067EFD6-F901-4D26-B740-7597492FBB07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4067EFD6-F901-4D26-B740-7597492FBB07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5372441-D38A-4E39-8622-F3BAFBB098EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5372441-D38A-4E39-8622-F3BAFBB098EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5372441-D38A-4E39-8622-F3BAFBB098EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5372441-D38A-4E39-8622-F3BAFBB098EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
