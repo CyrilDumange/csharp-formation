@@ -1,13 +1,7 @@
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using auth.models;
 using auth.webapp.Auth;
 using auth.webapp.Services;
 using Common.AuthMiddleware;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using OpenIddict.Abstractions;
-using OpenIddict.EntityFrameworkCore.Models;
 using OpenIddict.Validation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
