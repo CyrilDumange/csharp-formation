@@ -1,29 +1,21 @@
 using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using fizzbuzz;
 using fizzbuzz.dal;
 using fizzbuzz.dal.Migrations;
-using fizzbuzz.models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenIddict.Abstractions;
-using OpenIddict.Validation.AspNetCore;
 using webapi.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IFizzbuzz, BasicFizzbuzz>();
-builder.Services.AddTransient<IHistorizedFizzbuzz, HistorizedFizzbuzz>();
-builder.Services.AddScoped<IHistory, History>();
 builder.Services.AddTransient<IDbConnection>((sp) =>
     new NpgsqlConnection(builder.Configuration.GetConnectionString("public"))
 );
-
+builder.Services.AddSingleton<IFizzbuzz, BasicFizzbuzz>();
+builder.Services.AddTransient<IHistorizedFizzbuzz, HistorizedFizzbuzz>();
+builder.Services.AddScoped<IHistory, History>();
 
 builder.Services.AddAuthentication(options =>
         {
@@ -39,12 +31,11 @@ builder.Services.AddAuthentication(options =>
 
             options.Authority = "https://localhost:7256/";
             options.Audience = "test";
-            var t = options.TokenHandlers;
 
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidateAudience = false,
+                ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = "https://localhost:7256/",
