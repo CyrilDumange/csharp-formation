@@ -1,0 +1,27 @@
+@using NSubstitute
+@using blazor.Components.Pages
+@using fizzbuzz
+@using fizzbuzz.models
+@inherits TestContext
+
+@code {
+    [Fact]
+    public void Simple()
+    {
+        var output = new FizzbuzzOutput(new string[] { "1" });
+
+        var mockHistorized = Substitute.For<IHistorizedFizzbuzz>();
+        mockHistorized.Compute(Arg.Any<FizzBuzzInput>())
+        .Returns(Task.FromResult(output));
+
+        Services.AddSingleton(mockHistorized);
+
+        var rendered = RenderComponent<Fizzbuzz>();
+        var bt = rendered.Find("#fetchfizz");
+
+        bt.Click();
+
+        var res = rendered.Find("ul");
+        Assert.Equal(res.Children.Length, output.Values.Length);
+    }
+}
