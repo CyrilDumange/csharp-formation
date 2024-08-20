@@ -1,0 +1,59 @@
+@page "/fizzbuzz"
+@rendermode InteractiveServer
+
+@using fizzbuzz
+@using fizzbuzz.models
+
+
+@inject IHistorizedFizzbuzz fizz
+
+<div style="display:flex;flex-direction: column;">
+    <div>
+        <span>int1: </span>
+        <input id="int1" type="text" @bind="int1" required="@true" />
+    </div>
+    <div>
+        <span>int2: </span>
+        <input id="int2" type="text" @bind="int2" required="@true" />
+    </div>
+    <div>
+        <span>str1: </span>
+        <input id="str1" type="text" @bind="str1" required="@true" />
+    </div>
+    <div>
+        <span>str2: </span>
+        <input id="str2" type="text" @bind="str2" required="@true" />
+    </div>
+    <div>
+        <span>limit: </span>
+        <input id="limit" stype="text" @bind="limit" required="@true" />
+    </div>
+    <input id="fetchfizz" type="button" @onclick="FetchFizzbuzz" value="send" />
+</div>
+
+<ul style="min-height: 1rem;">
+    @if (result is not null)
+    {
+        foreach (var v in result)
+        {
+            <li>@v</li>
+        }
+    }
+</ul>
+
+@code {
+
+    public int int1 = 3;
+    public int int2 = 5;
+    public int limit = 100;
+    public string str1 = "fizz";
+    public string str2 = "buzz";
+
+    public IEnumerable<string> result;
+
+    private async Task FetchFizzbuzz()
+    {
+        var res = await fizz.Compute(new FizzBuzzInput(int1, int2, str1, str2, limit));
+        result = res.Values;
+    }
+}
