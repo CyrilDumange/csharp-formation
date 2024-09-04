@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Common.AuthMiddleware;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,10 +26,14 @@ namespace Common.Tests.AuthMiddleware
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
+                    services.AddAuthentication();
+                    services.AddAuthorization();
                 }).Configure(app =>
                 {
                     app.UseRouting();
                     app.UseMiddleware<ClaimInjector>("test", "test");
+                    app.UseAuthentication();
+                    app.UseAuthorization();
                     app.UseMiddleware<AuthorizeClaimMiddleware>();
                     app.UseEndpoints(endpoints =>
                     {
@@ -56,10 +61,14 @@ namespace Common.Tests.AuthMiddleware
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
+                    services.AddAuthorization();
+                    services.AddAuthentication();
                 }).Configure(app =>
                 {
                     app.UseRouting();
                     app.UseMiddleware<ClaimInjector>("test", "test");
+                    app.UseAuthorization();
+                    app.UseAuthentication();
                     app.UseMiddleware<AuthorizeClaimMiddleware>();
                     app.UseEndpoints(endpoints =>
                     {
@@ -87,9 +96,13 @@ namespace Common.Tests.AuthMiddleware
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
+                    services.AddAuthorization();
+                    services.AddAuthentication();
                 }).Configure(app =>
                 {
                     app.UseRouting();
+                    app.UseAuthorization();
+                    app.UseAuthentication();
                     app.UseMiddleware<ClaimInjector>("test", "test");
                     app.UseMiddleware<AuthorizeClaimMiddleware>();
                     app.UseEndpoints(endpoints =>
@@ -120,9 +133,13 @@ namespace Common.Tests.AuthMiddleware
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
+                    services.AddAuthorization();
+                    services.AddAuthentication();
                 }).Configure(app =>
                 {
                     app.UseRouting();
+                    app.UseAuthorization();
+                    app.UseAuthentication();
                     app.UseMiddleware<ClaimInjector>("test", "test retest");
                     app.UseMiddleware<AuthorizeClaimMiddleware>();
                     app.UseEndpoints(endpoints =>
