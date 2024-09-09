@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\fizzbuzz\fizzbuzz.csproj" />
+    <ProjectReference Include="..\fizzbuzz.models\fizzbuzz.models.csproj" />
+    <ProjectReference Include="..\fizzbuzz.dal\fizzbuzz.dal.csproj" />
   </ItemGroup>
 
 </Project>

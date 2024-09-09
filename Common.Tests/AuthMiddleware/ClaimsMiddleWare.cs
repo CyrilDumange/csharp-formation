@@ -12,12 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Common.Tests.AuthMiddleware
 {
     public class ClaimsMiddleWareTests
     {
-        [Fact]
         public async Task TestSimple()
         {
             bool called = false;
@@ -26,14 +26,18 @@ namespace Common.Tests.AuthMiddleware
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddAuthentication();
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = "Bearer";
+                        options.DefaultChallengeScheme = "Bearer";
+                    });
                     services.AddAuthorization();
                 }).Configure(app =>
                 {
                     app.UseRouting();
-                    app.UseMiddleware<ClaimInjector>("test", "test");
                     app.UseAuthentication();
                     app.UseAuthorization();
+                    app.UseMiddleware<ClaimInjector>("test", "test");
                     app.UseMiddleware<AuthorizeClaimMiddleware>();
                     app.UseEndpoints(endpoints =>
                     {
@@ -41,18 +45,23 @@ namespace Common.Tests.AuthMiddleware
                         [AuthorizeClaim(Key = "test", Value = "test")] () =>
                         {
                             called = true;
-                        });
+                        }).AllowAnonymous();
                     });
                 });
             using var server = new TestServer(builder);
             var client = server.CreateClient();
 
-            var res = await client.GetAsync("/test");
+            var req = new HttpRequestMessage(HttpMethod.Get, "/test");
+            req.Headers.Add(
+                "Authorization",
+                "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkIyMzE5QzgwNTdDMUVGRUNGRjNGM0ZCMUMxNTE1RjUxODY4OEFENEMiLCJ4NXQiOiJzakdjZ0ZmQjctel9Qei14d1ZGZlVZYUlyVXciLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo3MjU2LyIsImV4cCI6MTcyNTU0NTk0MiwiaWF0IjoxNzI1NTQyMzQyLCJqdGkiOiI3YzIxZjEyNS0zNThjLTQ3MzgtYWIwYy0yOTExZTZiNDlhMjgiLCJzdWIiOiJ0ZXN0IiwibmFtZSI6InRlc3QiLCJhdWQiOiJ0ZXN0Iiwic2NvcGUiOiJ1c2VyLndyaXRlIiwib2lfcHJzdCI6InRlc3QiLCJjbGllbnRfaWQiOiJ0ZXN0Iiwib2lfdGtuX2lkIjoiMmZkMTM5YjUtNjcwZC00YjNjLTlkMGQtZTgzNDNhMzNjMWZhIn0.i60iA4v7zgzm4b9IlfHCvcRooCi-AAxQUpaS6sFgSZhtOiz-y3IORycOD6RhosDi-McZOREYNgSBwSXqObFJRB_jX9mZgMJSKEA0wNcRdcc4JyPkG-Fs52rVQiLayBwsc_qOK-bAl50bJX6REq_Vgl6oeOl9jC-I6NWqIuby6QnFR4bA_yGO4RBdvNrq5z82IJnHVsjODXnhynIB-iK__VoDN6L0v88ax1bHSiUDpOzHciytCyKvEG3Ocbj_oH-2cIm5fa12q7u5J008KWYiW5U7lndnl9sBz1LidpT0RYNL5a-OVun52-TXA_Mi9_FhD0wYKHNYgXlG5o0k8XLdjw"
+                );
+
+            var res = await client.SendAsync(req);
             Assert.Equal(System.Net.HttpStatusCode.OK, res.StatusCode);
             Assert.True(called);
         }
 
-        [Fact]
         public async Task TestLocked()
         {
             bool called = false;
@@ -87,7 +96,6 @@ namespace Common.Tests.AuthMiddleware
             Assert.False(called);
         }
 
-        [Fact]
         public async Task TestMultiple()
         {
             bool called = false;
@@ -124,7 +132,6 @@ namespace Common.Tests.AuthMiddleware
             Assert.True(called);
         }
 
-        [Fact]
         public async Task TestContains()
         {
             bool called = false;

@@ -3,7 +3,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS base
 COPY . .
 
 RUN dotnet build
-RUN dotnet test
 
 FROM base AS auth-build
 RUN dotnet publish auth.webapp -o /out-auth

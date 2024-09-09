@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using auth.models;
@@ -41,6 +42,13 @@ namespace auth.webapp.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpPost("/connect/test")]
+        public void Test()
+        {
+            MetricsManager.TokenCreation.Add(1);
+            return;
         }
 
         [HttpPost("/create"), IgnoreAntiforgeryToken]

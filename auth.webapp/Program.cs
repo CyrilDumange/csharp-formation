@@ -1,8 +1,13 @@
+using System.Diagnostics.Metrics;
 using auth.webapp.Auth;
 using auth.webapp.Services;
 using Common.AuthMiddleware;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 using OpenIddict.Validation.AspNetCore;
+using OpenTelemetry;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -30,6 +35,7 @@ builder.Services.AddOpenIddict()
         options.SetAuthorizationEndpointUris("connect/authorization");
         options.SetIssuer("https://localhost:7256/");
 
+
         // Enable the client credentials flow.
         options.AllowClientCredentialsFlow();
         options.AllowRefreshTokenFlow();
@@ -44,7 +50,8 @@ builder.Services.AddOpenIddict()
 
         // Register the ASP.NET Core host and configure the ASP.NET Core options.
         options.UseAspNetCore()
-               .EnableTokenEndpointPassthrough();
+               .EnableTokenEndpointPassthrough()
+               .DisableTransportSecurityRequirement();
     }).AddValidation(options =>
     {
         options.UseLocalServer();
@@ -68,7 +75,22 @@ builder.Services.AddOpenTelemetry()
         .AddService(serviceName: builder.Environment.ApplicationName))
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
-        .AddConsoleExporter());
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+            options.Protocol = OtlpExportProtocol.Grpc;
+            options.ExportProcessorType = ExportProcessorType.Simple;
+        }).AddConsoleExporter()
+    ).WithMetrics(metrics =>
+    {
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri("http://localhost:4317");
+            options.Protocol = OtlpExportProtocol.Grpc;
+            options.ExportProcessorType = ExportProcessorType.Simple;
+        });
+    });
 
 var app = builder.Build();
 
@@ -103,4 +125,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+MetricsManager.Init();
+
 app.Run();
+
