@@ -3,6 +3,7 @@ using auth.webapp.Auth;
 using auth.webapp.Services;
 using Common.AuthMiddleware;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Query.ExpressionTranslators.Internal;
 using OpenIddict.Validation.AspNetCore;
 using OpenTelemetry;
@@ -75,9 +76,10 @@ builder.Services.AddOpenTelemetry()
         .AddService(serviceName: builder.Environment.ApplicationName))
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
+        .AddNpgsql()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4317");
+            options.Endpoint = new Uri("http://192.168.0.39:4317");
             options.Protocol = OtlpExportProtocol.Grpc;
             options.ExportProcessorType = ExportProcessorType.Simple;
         }).AddConsoleExporter()
@@ -86,7 +88,7 @@ builder.Services.AddOpenTelemetry()
         metrics.AddAspNetCoreInstrumentation();
         metrics.AddOtlpExporter(options =>
         {
-            options.Endpoint = new Uri("http://localhost:4317");
+            options.Endpoint = new Uri("http://192.168.0.39:4317");
             options.Protocol = OtlpExportProtocol.Grpc;
             options.ExportProcessorType = ExportProcessorType.Simple;
         });

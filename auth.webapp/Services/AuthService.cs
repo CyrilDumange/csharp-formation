@@ -25,10 +25,13 @@ namespace auth.webapp.Services
     {
         public async Task<Result<ClaimsPrincipal>> GetToken(OpenIddictRequest req)
         {
+            using var activity = MetricsManager.SpanPopper.CreateActivity("token_creation", System.Diagnostics.ActivityKind.Server)!;
             if (req.ClientId is null)
             {
                 return Result.Failure<ClaimsPrincipal>(new Error(ErrorTypes.BadRequest, "client_id was not passed"));
             }
+
+            activity.SetTag("client_id", req.ClientId);
 
             var client = await appManager.FindByClientIdAsync(req.ClientId);
             if (client is null)
