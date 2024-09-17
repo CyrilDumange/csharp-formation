@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\fizzbuzz.dal\fizzbuzz.dal.csproj" />
+    <ProjectReference Include="..\fizzbuzz.models\fizzbuzz.models.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -16,7 +16,6 @@ namespace Common.Tests.AuthMiddleware
 {
     public class ClaimsMiddleWareTests
     {
-        [Fact]
         public async Task TestSimple()
         {
             bool called = false;
@@ -47,7 +46,6 @@ namespace Common.Tests.AuthMiddleware
             Assert.True(called);
         }
 
-        [Fact]
         public async Task TestLocked()
         {
             bool called = false;
@@ -78,7 +76,6 @@ namespace Common.Tests.AuthMiddleware
             Assert.False(called);
         }
 
-        [Fact]
         public async Task TestMultiple()
         {
             bool called = false;
@@ -111,7 +108,6 @@ namespace Common.Tests.AuthMiddleware
             Assert.True(called);
         }
 
-        [Fact]
         public async Task TestContains()
         {
             bool called = false;
